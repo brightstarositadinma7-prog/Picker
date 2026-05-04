@@ -5,20 +5,22 @@ const otpGenerator = require('otp-generator');
 const { signUpTemplate } = require('../utils/emailTemplate');
 const jwt = require('jsonwebtoken')
 
-exports.register = async(req, res) => {
+exports.register = async(req, res, next) => {
     try {
         const {name, email, phoneNumber, password, confirmPassword} = req.body;
 
         const emailExists = await userModel.findOne({ email: email})
         if (emailExists) {
-            return res.status(400).json({
-                message: `User with email: ${email} already exists`
+            return next({
+                message: `User with email: ${email} already exists`,
+                statusCode: 400
             })
         }
 
         if (password !== confirmPassword) {
-            return res.status(400).json({
-                message: 'Passwords do not match.'
+            return next({
+                message: `Password does not match`,
+                statusCode: 400
             })
     }
 
@@ -66,9 +68,10 @@ exports.register = async(req, res) => {
             data
         })
     } catch (error) {
-        res.status(500).json({
-            message: error.message
-        })
+        next({
+                message: error.message,
+                statusCode: 500
+            })
     }
 };
 
@@ -78,13 +81,15 @@ exports.verifyEmail = async (req, res) => {
        
        const user = await userModel.findOne({ email })
        if (!user) {
-        return res.status(404).json({
-            message: 'User not found'
+        return next({
+            message: `User not found`,
+            statusCode: 404
         })
        }
        if (new Date() > user.otpExpiresAt || user.otp != otp ) {
-        return res.status(404).json({
-            message: 'Invalid OTP'
+        return next({
+            message: `Invalid OTP`,
+            statusCode: 404
         })
        }
        
@@ -99,9 +104,10 @@ exports.verifyEmail = async (req, res) => {
        })
 
     } catch (error) {
-        res.status(500).json({
-            message: error.message
-        })
+        next({
+                message: error.message,
+                statusCode: 500
+            })
     }
 };
 
@@ -111,8 +117,9 @@ exports.resendOTP = async (req, res) => {
 
         const user = await userModel.findOne({ email })
         if (!user) {
-            return res.status(404).json({
-                message: 'User not found'
+            return next({
+                message: `User not found`,
+                statusCode: 404
             })
         }
 
@@ -137,9 +144,10 @@ exports.resendOTP = async (req, res) => {
             message: 'OTP resent successfully'
         })
     } catch (error) {
-       res.status(500).json({
-            message: error.message
-        }) 
+       next({
+                message: error.message,
+                statusCode: 500
+            })
     }
 };
 
@@ -149,34 +157,38 @@ exports.login = async( req, res) => {
 
         const user = await userModel.findOne({ email })
         if (!user) {
-            return res.status(404).json({
-                message: 'User not found'
+            return next({
+                message: `User not found`,
+                statusCode: 404
             })
         }
 
         if (user.isVerified == false) {
-            return res.status(404).json({
-                message: 'Please verify your email'
+            return next({
+                message: `Please verify email`,
+                statusCode: 404
             })
         }
 
         const passwordCorrect = await bcrypt.compare(password, user.password);
 
         if (!passwordCorrect) {
-            return res.status(400).json({
-                message: 'Invalid credentials'
+            return next({
+                message: `Invalid Credentials`,
+                statusCode: 400
             })
         }
 
-        const token = await jwt.sign({ id: user._id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '30mins'});
+        const token = await jwt.sign({ id: user._id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '1day'});
 
         res.status(200).json({
             message: 'Login Successful',
             token
         })
     } catch (error) {
-        res.status(500).json({
-            message: error.message
-        }) 
+        next({
+                message: error.message,
+                statusCode: 500
+            })
     }
 }

@@ -7,6 +7,7 @@ const axios = require('axios');
 
 exports.placeOrder = async (req, res) => {
     try {
+        console.log("request ip: ",req.socket)
         const { id } = req.user;
         const { menuId } = req.params;
         const { quantity } = req.body;
@@ -15,14 +16,16 @@ exports.placeOrder = async (req, res) => {
         const menu = await menuModel.findById(menuId);
 
         if (!user) {
-            return res.status(404).json({
-                message: "User not found"
+            return next({
+                message: `User not found`,
+                statusCode: 404
             })
         };
 
         if (!menu) {
-            return res.status(404).json({
-                message: "Menu not found"
+            return next({
+                message: `Menu not found`,
+                statusCode: 404
             })
         };
 
@@ -32,7 +35,7 @@ exports.placeOrder = async (req, res) => {
                 email: user.email,
                 name: user.name
             },
-            redirect_url: 'https://www.google.com',
+            redirect_url: 'http://localhost:9065/api/order',
             currency: 'NGN',
             reference: reference
         };
@@ -42,6 +45,8 @@ exports.placeOrder = async (req, res) => {
                 Authorization:  `Bearer ${process.env.KORA_SK}`
             }
         });
+
+        console.log(data)
 
         const order = new orderModel({
             restaurantId : menu.restaurantId,
@@ -60,9 +65,10 @@ exports.placeOrder = async (req, res) => {
         })
     } catch (error) {
         // console.log(error)
-        res.status(500).json({
-            messsage: error.message
-        })
+        next({
+                message: error.message,
+                statusCode: 500
+            })
     }
 };
 
@@ -74,8 +80,9 @@ exports.verifyPayment = async (req, res) => {
         });
 
         if (!order) {
-            return res.status(404).json({
-                message: 'No order found'
+            return next({
+                message: `No order found`,
+                statusCode: 404
             })
         };
 
@@ -104,8 +111,9 @@ exports.verifyPayment = async (req, res) => {
             })
         };
     } catch (error) {
-        res.status(500).json({
-            message: error.message
-        })
+        next({
+                message: error.message,
+                statusCode: 500
+            })
     }
 }

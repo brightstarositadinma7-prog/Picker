@@ -7,8 +7,9 @@ exports.authenticate = async (req, res, next) => {
     try {
         const auth = req.headers.authorization
         if (!auth) {
-            return res.status(400).json({
-                message: "Auth required"
+            return next({
+                message: `Auth required`,
+                statusCode: 400
             })
         }
         const token = auth.split(' ')[1]
@@ -17,8 +18,9 @@ exports.authenticate = async (req, res, next) => {
 
         const user = await restaurantModel.findById(decodedToken.id) || await userModel.findById(decodedToken.id)
         if (!user) {
-            return res.status(404).json({
-                message: "Authentication failed: User not found"
+            return next({
+                message: `Authentication failed: User not found`,
+                statusCode: 404
             })
         }
 
@@ -29,13 +31,15 @@ exports.authenticate = async (req, res, next) => {
 
     } catch (error) {
         if (error instanceof jwt.JsonWebTokenError) {
-            return res.status(401).json({
-                message: 'Session expired, Login to continue'
+            return next({
+                message: `Session expired, Login to continue`,
+                statusCode: 401
             })
         }
-        res.status(500).json({
-            message: error.message
-        })
+        next({
+                message: error.message,
+                statusCode: 500
+            })
     }
 
 };
@@ -44,8 +48,9 @@ exports.checkAdmin = async (req, res, next) => {
     try {
         const auth = req.headers.authorization
         if (!auth) {
-            return res.status(400).json({
-                message: "Auth required"
+            return next({
+                message: `Auth required`,
+                statusCode: 400
             })
         }
         const token = auth.split(' ')[1]
@@ -54,16 +59,18 @@ exports.checkAdmin = async (req, res, next) => {
 
         const user = await userModel.findById(decodedToken.id)
         if (!user) {
-            return res.status(404).json({
-                message: "Authentication failed: User not found"
+            return next({
+                message: `Authentication failed: User not found`,
+                statusCode: 404
             })
         }
 
         const role = user.role
 
         if (role !== 'admin') {
-            res.status(401).json({
-                message: 'Unaunthorized'
+            next({
+                message: `Unauthorized`,
+                statusCode: 401
             })
         }
 
@@ -73,9 +80,10 @@ exports.checkAdmin = async (req, res, next) => {
 
 
     } catch (error) {
-        res.status(500).json({
-            message: error.message
-        })
+        next({
+                message: error.message,
+                statusCode: 500
+            })
     }
 
 }
