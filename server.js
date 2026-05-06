@@ -23,7 +23,7 @@ app.use(expressSession({secret: 'olachi', saveUninitialized: false, resave: fals
 app.use(passport.initialize());
 app.use(passport.session())
 app.use('/api/v1/user',userRouter);
-app.use('/api/v1/users',facebookRoute);
+// app.use('/api/v1/users',facebookRoute);
 app.use('/api/v1/restaurant', restaurantRouter);
 app.use('/api/v1/order`', orderRouter);
 app.use('/api/v1/location', locationRoute);
@@ -51,7 +51,23 @@ const swaggerDefinition = {
       description: 'Development server',
     },
   ],
+  security: [
+    {
+      bearerAuth: []
+    }
+  ],
+  components: {
+    securitySchemes: {
+      bearerAuth: {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT'
+      }
+    }
+  }
+  
 };
+
 
 const options = {
     swaggerDefinition,

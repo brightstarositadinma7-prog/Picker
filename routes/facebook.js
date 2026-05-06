@@ -1,8 +1,8 @@
-const passport = require('passport')
-const router = require('express').Router();
+// const passport = require('passport')
+// const router = require('express').Router();
 
-router.get('/facebookLogin',
-  passport.authenticate('facebook', { scope: ['email'] })
-);
+// router.get('/facebookLogin',
+//   passport.authenticate('facebook', { scope: ['email'] })
+// );
 
-  module.exports = router
+//   module.exports = router

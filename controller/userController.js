@@ -81,15 +81,13 @@ exports.verifyEmail = async (req, res) => {
        
        const user = await userModel.findOne({ email })
        if (!user) {
-        return next({
-            message: `User not found`,
-            statusCode: 404
+        return res.status(404).json({
+            message: `User not found`
         })
        }
        if (new Date() > user.otpExpiresAt || user.otp != otp ) {
-        return next({
-            message: `Invalid OTP`,
-            statusCode: 404
+        return res.status(404).json({
+            message: `Invalid OTP`
         })
        }
        
@@ -117,9 +115,8 @@ exports.resendOTP = async (req, res) => {
 
         const user = await userModel.findOne({ email })
         if (!user) {
-            return next({
+            return res.status(404).json({
                 message: `User not found`,
-                statusCode: 404
             })
         }
 
@@ -144,10 +141,9 @@ exports.resendOTP = async (req, res) => {
             message: 'OTP resent successfully'
         })
     } catch (error) {
-       next({
-                message: error.message,
-                statusCode: 500
-            })
+       res.status(500).json({
+            message: error.message,
+        })
     }
 };
 
@@ -157,26 +153,23 @@ exports.login = async( req, res) => {
 
         const user = await userModel.findOne({ email })
         if (!user) {
-            return next({
-                message: `User not found`,
-                statusCode: 404
+            return res.status(404).json({
+                message: `User not found`
             })
         }
 
         if (user.isVerified == false) {
-            return next({
+            return res.status(404).json({
                 message: `Please verify email`,
-                statusCode: 404
             })
         }
 
         const passwordCorrect = await bcrypt.compare(password, user.password);
 
         if (!passwordCorrect) {
-            return next({
+            return res.status(400).json({
                 message: `Invalid Credentials`,
-                statusCode: 400
-            })
+            })      
         }
 
         const token = await jwt.sign({ id: user._id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '1day'});
@@ -186,10 +179,9 @@ exports.login = async( req, res) => {
             token
         })
     } catch (error) {
-        next({
-                message: error.message,
-                statusCode: 500
-            })
+       return res.status(500).json({
+            message: error.message,
+        })
     }
 }
 
@@ -198,6 +190,18 @@ exports.getAllUsers = async (req, res) => {
         const users = await userModel.find().select('-password');
         res.status(200).json({
             message: 'All users fetched successfully',
+            users
+        })
+    } catch (error) {
+        next(error);
+    }
+}
+exports.getOneUser = async (req, res) => {
+    try {
+        const { id } = req.params
+        const users = await userModel.findById(id).select('-password');
+        res.status(200).json({
+            message: 'User fetched successfully',
             users
         })
     } catch (error) {
