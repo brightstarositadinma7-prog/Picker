@@ -192,3 +192,15 @@ exports.login = async( req, res) => {
             })
     }
 }
+
+exports.getAllUsers = async (req, res) => {
+    try {
+        const users = await userModel.find().select('-password');
+        res.status(200).json({
+            message: 'All users fetched successfully',
+            users
+        })
+    } catch (error) {
+        next(error);
+    }
+}
