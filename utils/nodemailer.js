@@ -15,7 +15,7 @@ console.log(transporter)
 const sendMail = async (options) => {
     try {
         const info = await transporter.sendMail({
-            from: `"OLACHI" <${process.env.SMTP_USER}>`,
+            from: `"Bright" <${process.env.SMTP_USER}>`,
             to: options.email,
             subject: options.subject,
             html: options.html,

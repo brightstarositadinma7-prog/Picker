@@ -208,3 +208,30 @@ exports.getOneUser = async (req, res) => {
         next(error);
     }
 }
+
+exports.updateUser = async (req, res) => {
+    try {
+        const {id} = req.params
+        const {name, email, phoneNumber} = req.body
+        if(!id){
+            return res.status(404).json({
+                message: 'User not found'
+            })
+        }
+
+         const updatedUser = await userModel.updateMany({
+            name,
+            email,
+            phoneNumber
+        })
+        return res.status(200).json({
+            message: 'User updated successfully',
+            data: updatedUser
+        })
+        
+    } catch (error) {
+        res.status(500).json({
+            error: error.message
+        })
+    }
+}
