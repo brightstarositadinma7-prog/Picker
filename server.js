@@ -19,7 +19,7 @@ const swaggerJsdoc = require('swagger-jsdoc')
 
 const app = express();
 app.use(express.json());
-app.use(expressSession({secret: 'olachi', saveUninitialized: false, resave: false}))
+app.use(expressSession({secret: 'Bright', saveUninitialized: false, resave: false}))
 app.use(passport.initialize());
 app.use(passport.session())
 app.use('/api/v1/user',userRouter);
@@ -121,12 +121,13 @@ const mongoose = require('mongoose');
 mongoose.connect(process.env.MONGODB_URI)
 .then(() => {
     console.log('Database connected successfully');
-    app.listen(PORT, ()=> {
-    console.log(`Server listening to Port: ${PORT}`);
-})
+
     
 })
 .catch((error) => {
     console.log(error.message);
     
+})
+    app.listen(PORT, ()=> {
+    console.log(`Server listening to Port: ${PORT}`);
 })
