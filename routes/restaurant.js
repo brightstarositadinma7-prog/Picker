@@ -13,12 +13,12 @@ router.post('/resend-otp', resendRestaurantOTP);
 
 router.post('/login', loginRestaurant);
 
-const upload = multer(
-    {
-        dest: '/upload'
-    }
-)
-router.post('/menu', authenticate, upload.single('image') , uploadProduct);
+// const upload = multer(
+//     {
+//         dest: '/upload'
+//     }
+// )
+// router.post('/menu', authenticate, upload.single('image') , uploadProduct);
 
 router.get('/menus', authenticate, getAllMenu)
 
