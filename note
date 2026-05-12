@@ -1,0 +1,58 @@
+Driver updates delivery
+        ↓
+Backend receives data
+        ↓
+AI service analyzes:
+- GPS
+- timing
+- route
+- verification
+        ↓
+AI returns decision:
+- Safe
+- Suspicious
+- Needs review
+
+
+Tracking
+
+Leaflet	            map rendering
+OpenStreetMap	    map data
+OSRM	            routing
+Socket.IO	        live tracking
+
+Structure for this project
+Frontend	      React / Next.js
+Backend	          Node.js + Express
+Database	      MySQL
+Real-Time	      Socket.IO
+Maps	          Leaflet + OpenStreetMap
+AI Logic	      Node.js intelligent services
+
+M.V.P
+PHASE 1
+
+Build:
+
+authentication
+deliveries
+MySQL tables
+PHASE 2
+
+Add:
+
+Socket.IO
+live status updates
+PHASE 3
+
+Add:
+
+live tracking
+admin dashboard
+PHASE 4
+
+Add:
+
+chat
+notifications
+fraud detection
